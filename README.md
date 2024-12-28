@@ -1,7 +1,6 @@
 # oros
-
-- first gyroscope test made, deployed as gas webapp
-- phone has other experiment files with animation features
-- build the parlax card floater/displayer
-- build the simple animation (blob) with gas editor/text overlay (opacity control? autosave - pertains to itself!)
-- build qr code generator/organifier (like stretching out a moving warping color changing limb)
+- gather all experiments/snippets from phone and computer, put in this repo
+- build webapp text editor live coding environment canvas (wrapped code textbox with animations displaying behind)
+- build qr code generator / prettifier / animator
+- build gyroscope / other phone sensor utilisation prototypes
+- continue the floating card mask/displaying page - either put pics on imgr or make it a webapp to properly serve my drive pics
