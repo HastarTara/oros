@@ -172,7 +172,7 @@ card.addEventListener('touchmove', (e) => {
     const deltaY = e.touches[0].clientY - touchStartY;
 
     // Check if the movement is primarily horizontal (swipe)
-    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
         isSwiping = true; // Detect a swipe gesture
         card.style.transform = isFlipped ? '' : 'rotateY(180deg)';
         isFlipped = !isFlipped;
