@@ -135,11 +135,13 @@
                 deltaY = (e.clientY - centerY) / (cardRect.height / 2);
             }
 
-            const rotateX = Math.min(Math.max(deltaY * 25, -25), 25);
-            const rotateY = Math.min(Math.max(deltaX * 25, -25), 25);
+            // Increase the factor to make the parallax stronger (e.g., double the intensity)
+            const intensity = 50; // Doubling from 25 to 50
 
-            card.style.transform = `rotateY(${rotateY}deg) rotateX(${-rotateX}deg)`;
-        };
+            const rotateX = Math.min(Math.max(deltaY * intensity, -intensity), intensity);
+            const rotateY = Math.min(Math.max(deltaX * intensity, -intensity), intensity);
+
+card.style.transform = `rotateY(${rotateY}deg) rotateX(${-rotateX}deg)`;
 
         // Start dragging for mouse and touch (optional)
         card.addEventListener('mousedown', () => {

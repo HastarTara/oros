@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Click Shine Effect</title>
+    <style>
+        /* Effect Shine */
+        a.effect-shine {
+            position: relative;
+            display: inline-block;
+            text-decoration: none;
+            color: #fff;
+            background-color: #242424;
+            padding: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        a.effect-shine:hover {
+            -webkit-mask-image: linear-gradient(-75deg, rgba(0,0,0,.6) 30%, #000 50%, rgba(0,0,0,.6) 70%);
+            -webkit-mask-size: 200%;
+            animation: shine 2s infinite;
+        }
+
+        @-webkit-keyframes shine {
+            from {
+                -webkit-mask-position: 150%;
+            }
+
+            to {
+                -webkit-mask-position: -50%;
+            }
+        }
+
+        /* Ensuring the shine works with a div for click effect */
+        .shine-target {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            background-color: #eb5b5b;
+            margin: 100px auto;
+            border-radius: 10px;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .shine-target.shine {
+            -webkit-mask-image: linear-gradient(-75deg, rgba(0,0,0,.6) 30%, #000 50%, rgba(0,0,0,.6) 70%);
+            -webkit-mask-size: 200%;
+            animation: shine 1s forwards;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="shine-target">
+        Click me to trigger shine effect!
+    </div>
+
+    <script>
+        const shineElement = document.querySelector('.shine-target'); // Target element to apply the shine effect
+
+        // Function to handle click event
+        shineElement.addEventListener('click', triggerShineEffect);
+
+        // Function to trigger the shine effect
+        function triggerShineEffect() {
+            // Add shine effect
+            shineElement.classList.add('shine');
+
+            // Optionally, remove shine effect after the animation completes (1 second)
+            setTimeout(() => {
+                shineElement.classList.remove('shine');
+            }, 1000); // Adjust duration as needed
+        }
+    </script>
+
+</body>
+</html>
