@@ -7,12 +7,11 @@
     <style>
         body, html {
             margin: 0;
-            padding: 0;
             height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: #f0f0f0;
+            background: #242424;
             overflow: hidden; /* Prevent scrolling */
         }
         .card-container {
@@ -162,19 +161,6 @@
 
         // Update parallax effect during touchmove
         card.addEventListener('touchmove', applyParallax);
-
-        // Fullscreen API trigger (for mobile)
-        document.addEventListener('click', () => {
-            if (document.documentElement.requestFullscreen) {
-                document.documentElement.requestFullscreen();
-            } else if (document.documentElement.mozRequestFullScreen) { // Firefox
-                document.documentElement.mozRequestFullScreen();
-            } else if (document.documentElement.webkitRequestFullscreen) { // Chrome, Safari
-                document.documentElement.webkitRequestFullscreen();
-            } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
-                document.documentElement.msRequestFullscreen();
-            }
-        });
     </script>
 </body>
 </html>
