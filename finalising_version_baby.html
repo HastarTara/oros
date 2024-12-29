@@ -79,27 +79,51 @@ let isSwiping = false; // Flag to determine if the user is swiping
 // Flip card when 'X' key is pressed
 document.addEventListener('keydown', (e) => {
     if (e.key === 'x' || e.key === 'X') {
-        if (isDragging) return;
-
-        // Stop the floating animation when flip starts
-        card.style.animation = 'none';
-
-        // Apply the flip transform with a delay to allow the animation to trigger
-        setTimeout(() => {
-            card.style.transform = isFlipped ? '' : 'rotateY(180deg)';
-            isFlipped = !isFlipped;
-
-            // Delay changing backface visibility to sync with animation duration
-            setTimeout(() => {
-                front.style.backfaceVisibility = isFlipped ? 'hidden' : 'visible';
-                back.style.backfaceVisibility = isFlipped ? 'visible' : 'hidden';
-
-                // Resume floating animation after flip completes
-                card.style.animation = 'float 3s ease-in-out infinite';
-            }, 200); // Sync this delay with the flip transition time
-        }, 10); // Small delay to ensure animation triggers
+        flipCard();
     }
 });
+
+// Double-tap for touch devices
+let lastTouchTime = 0;
+const DOUBLE_TAP_THRESHOLD = 300; // Maximum time between taps in milliseconds
+
+card.addEventListener('touchstart', (e) => {
+    if (isDragging) return; // Skip if dragging
+
+    const currentTime = new Date().getTime();
+    const timeDifference = currentTime - lastTouchTime;
+
+    if (timeDifference < DOUBLE_TAP_THRESHOLD) {
+        flipCard(); // Call the flipCard function on double-tap
+    }
+
+    // Update last touch time
+    lastTouchTime = currentTime;
+});
+
+// Function to handle the card flip
+function flipCard() {
+    if (isDragging) return;
+
+    // Stop the floating animation when flip starts
+    card.style.animation = 'none';
+
+    // Apply the flip transform with a delay to allow the animation to trigger
+    setTimeout(() => {
+        card.style.transform = isFlipped ? '' : 'rotateY(180deg)';
+        isFlipped = !isFlipped;
+
+        // Delay changing backface visibility to sync with animation duration
+        setTimeout(() => {
+            front.style.backfaceVisibility = isFlipped ? 'hidden' : 'visible';
+            back.style.backfaceVisibility = isFlipped ? 'visible' : 'hidden';
+
+            // Resume floating animation after flip completes
+            card.style.animation = 'float 3s ease-in-out infinite';
+        }, 200); // Sync this delay with the flip transition time
+    }, 10); // Small delay to ensure animation triggers
+}
+
 
 // Parallax effect during mouse or touch movement
 const applyParallax = (e) => {
