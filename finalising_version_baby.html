@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Flip with Float and Parallax</title>
+    <style>
+        body, html {
+            margin: 0;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f0f0f0;
+        }
+        .card-container {
+            width: 300px;
+            height: 600px;
+            perspective: 1000px;
+        }
+        .card {
+            width: 100%;
+            height: 100%;
+            border-radius: 30px;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            position: relative;
+            animation: float 3s ease-in-out infinite;
+            transition: transform 0.6s ease, transform 0.4s ease-out; /* Combines flip and parallax transitions */
+        }
+        .front, .back {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            backface-visibility: hidden; /* Hide both sides initially */
+        }
+        .front {
+            background: url('https://preview.redd.it/ars-goetia-if-there-had-been-contemporary-oil-paintings-of-v0-zmra82j85wec1.jpg?width=1024&format=pjpg&auto=webp&s=c59b3cab376aaaa04e2a6198d042e532a42e7817') center/cover no-repeat;
+        }
+        /* FIX THIS - POSSIBLY NEED GOOGLE DRIVE API OR FIREBASE OR IMGUR TO SERVE TEH IAMGE! ---------- https://drive.google.com/uc?export=view&id=1M28e4zrSXa91wrQQHfyrl9EUifAZOZ7U */
+        .back {
+            background: url('https://substackcdn.com/image/fetch/w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2Fddb98739-d1ac-4601-ba5a-38415435e67b_780x1417.webp') center/cover no-repeat;
+            background-size: 110% 106%;
+        
+                /* linear-gradient(to bottom right, #ff7e5f, #feb47b); Gradient for back */
+            transform: rotateY(180deg);  /*Back faces the opposite direction  */
+        }
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card-container">
+        <div class="card">
+            <div class="front"></div>
+            <div class="back"></div>
+        </div>
+    </div>
+    <script>
+        const card = document.querySelector('.card');
+const front = document.querySelector('.front');
+const back = document.querySelector('.back');
+let isFlipped = false;
+let isDragging = false;
+
+const MAX_DEGREE = 25; // Maximum tilt in any direction
+let touchStartX = 0; // For tracking swipe direction on touch devices
+let touchStartY = 0; // Track the vertical position to ensure swipe is horizontal
+let isSwiping = false; // Flag to determine if the user is swiping
+
+// Flip card when 'X' key is pressed
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'x' || e.key === 'X') {
+        if (isDragging) return;
+
+        // Stop the floating animation when flip starts
+        card.style.animation = 'none';
+
+        // Apply the flip transform with a delay to allow the animation to trigger
+        setTimeout(() => {
+            card.style.transform = isFlipped ? '' : 'rotateY(180deg)';
+            isFlipped = !isFlipped;
+
+            // Delay changing backface visibility to sync with animation duration
+            setTimeout(() => {
+                front.style.backfaceVisibility = isFlipped ? 'hidden' : 'visible';
+                back.style.backfaceVisibility = isFlipped ? 'visible' : 'hidden';
+
+                // Resume floating animation after flip completes
+                card.style.animation = 'float 3s ease-in-out infinite';
+            }, 200); // Sync this delay with the flip transition time
+        }, 10); // Small delay to ensure animation triggers
+    }
+});
+
+// Parallax effect during mouse or touch movement
+const applyParallax = (e) => {
+    if (!isDragging || isSwiping) return; // Skip parallax if swiping
+
+    const cardRect = card.getBoundingClientRect();
+    const centerX = cardRect.left + cardRect.width / 2;
+    const centerY = cardRect.top + cardRect.height / 2;
+
+    let deltaX, deltaY;
+
+    if (e.touches) {
+        // For touch events
+        deltaX = (e.touches[0].clientX - centerX) / (cardRect.width / 2);
+        deltaY = (e.touches[0].clientY - centerY) / (cardRect.height / 2);
+    } else {
+        // For mouse events
+        deltaX = (e.clientX - centerX) / (cardRect.width / 2);
+        deltaY = (e.clientY - centerY) / (cardRect.height / 2);
+    }
+
+    const rotateX = Math.min(Math.max(deltaY * MAX_DEGREE, -MAX_DEGREE), MAX_DEGREE);
+    const rotateY = Math.min(Math.max(deltaX * MAX_DEGREE, -MAX_DEGREE), MAX_DEGREE);
+
+    card.style.transform = `rotateY(${rotateY}deg) rotateX(${-rotateX}deg)`;
+};
+
+// Start dragging
+card.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    isSwiping = false; // Ensure swiping is not active during drag
+    touchStartX = e.clientX;
+    touchStartY = e.clientY;
+    card.style.animation = 'none'; // Stop floating animation
+});
+
+// Start touch
+card.addEventListener('touchstart', (e) => {
+    isDragging = true;
+    isSwiping = false;
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    card.style.animation = 'none'; // Stop floating animation
+});
+
+// Stop dragging and reset animation
+document.addEventListener('mouseup', () => {
+    isDragging = false;
+    isSwiping = false; // Reset swipe flag
+    card.style.animation = 'float 3s ease-in-out infinite'; // Resume floating if not flipped
+    card.style.transform = ''; // Reset parallax if not flipped
+});
+
+// Stop touch
+document.addEventListener('touchend', () => {
+    isDragging = false;
+    isSwiping = false; // Reset swipe flag
+    card.style.animation = 'float 3s ease-in-out infinite'; // Resume floating after touch
+    card.style.transform = ''; // Reset parallax if not flipped
+});
+
+// Update parallax effect during mousemove
+document.addEventListener('mousemove', applyParallax);
+
+// Update parallax effect during touchmove
+card.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+
+    const deltaX = e.touches[0].clientX - touchStartX;
+    const deltaY = e.touches[0].clientY - touchStartY;
+
+    // Check if the movement is primarily horizontal (swipe)
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+        isSwiping = true; // Detect a swipe gesture
+        card.style.transform = isFlipped ? '' : 'rotateY(180deg)';
+        isFlipped = !isFlipped;
+    } else {
+        // Apply parallax if it's not a swipe
+        applyParallax(e);
+    }
+});
+
+// Update parallax effect during mousemove
+card.addEventListener('mousemove', applyParallax);
+
+    </script>
+</body>
+</html>
