@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Code Editor</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    #editor {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent; /* Transparent background for canvas visibility */
+      color: black; /* Opaque text */
+      border: none;
+      resize: none;
+      font-size: 16px;
+      line-height: 1.5;
+      z-index: 10; /* On top of the canvas */
+      outline: none;
+    }
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1; /* Behind the text editor */
+    }
+  </style>
+</head>
+<body>
+  <!-- Canvas for rendering code results -->
+  <canvas id="canvas"></canvas>
+  
+  <!-- Textarea for typing code -->
+  <textarea id="editor" placeholder="// Type your code here\n// Example: ctx.fillRect(50, 50, 100, 100);"></textarea>
+
+  <script>
+
+    const effects = [
+        function ColorfulWaves(ctx) {
+        let time = 0;
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < canvas.height; i += 10) {
+            ctx.beginPath();
+            ctx.moveTo(0, i);
+            for (let x = 0; x < canvas.width; x += 10) {
+                ctx.lineTo(x, i + Math.sin((x + time) * 0.01) * 20);}
+            ctx.strokeStyle = `hsl(${(i + time) % 360}, 70%, 60%)`;
+            ctx.stroke();}
+            time += 2;
+            requestAnimationFrame(draw);}
+        draw();},
+
+        function GradientAnimation(ctx) {
+            let gradientStep = 0;
+        function draw() {
+        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        gradient.addColorStop(0, `hsl(${gradientStep % 360}, 80%, 60%)`);
+        gradient.addColorStop(1, `hsl(${(gradientStep + 180) % 360}, 80%, 60%)`);
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        gradientStep += 1;
+        requestAnimationFrame(draw);}
+        draw();},
+
+        function ParticleExplosion(ctx) {
+            const particles = Array.from({ length: 500 }, () => ({
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+        angle: Math.random() * Math.PI * 2,
+        speed: Math.random() * 4 + 1,
+        color: `hsl(${Math.random() * 360}, 70%, 60%)`,
+        }));
+        function draw() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+            p.x += Math.cos(p.angle) * p.speed;
+            p.y += Math.sin(p.angle) * p.speed;
+            ctx.fillStyle = p.color;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+            ctx.fill();});
+        requestAnimationFrame(draw);}
+        draw();},
+
+        function LissajousWeee(ctx) {
+            let time = 0;
+        function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.beginPath();
+        for (let t = 0; t < Math.PI * 2; t += 0.01) {
+            const x = canvas.width / 2 + Math.sin(t * 3 + time) * (canvas.width / 3);
+            const y = canvas.height / 2 + Math.cos(t * 2 + time) * (canvas.height / 3);
+            ctx.lineTo(x, y);}
+        ctx.strokeStyle = `hsl(${(time * 50) % 360}, 70%, 50%)`;
+        ctx.stroke();
+        time += 0.02;
+        requestAnimationFrame(draw);}
+        draw();},
+
+        function RadialPulse(ctx) {
+    let time = 0;
+function draw() {
+  const radius = Math.abs(Math.sin(time)) * canvas.width / 2;
+  const gradient = ctx.createRadialGradient(
+    canvas.width / 2,
+    canvas.height / 2,0,
+    canvas.width / 2,
+    canvas.height / 2,
+    radius);
+  gradient.addColorStop(0, `hsl(${(time * 50) % 360}, 70%, 70%)`);
+  gradient.addColorStop(1, 'black');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  time += 0.02;
+  requestAnimationFrame(draw);}
+draw();
+}
+    ];
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const editor = document.getElementById('editor');
+
+    // Resize canvas to match window
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Clear canvas and run user code
+    function updateCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear previous drawings
+      try {
+        // Evaluate user code safely (no external sandboxing yet)
+        const code = editor.value;
+        eval(code);
+      } catch (error) {
+        console.error('Error in code:', error);
+      }
+    }
+
+    // Auto-update canvas on text input
+    editor.addEventListener('input', updateCanvas);
+
+    // Example initial code
+    editor.value = `
+// Example: Draw a rectangle
+ctx.fillStyle = 'red';
+ctx.fillRect(50, 50, 100, 100);`;
+    updateCanvas(); // Render initial example
+
+let isVisible = false;
+
+// Create the effects dropdown (always hidden by default)
+const dropdown = document.createElement('select');
+dropdown.style.position = 'fixed';
+dropdown.style.top = '50px';
+dropdown.style.right = '10px';
+dropdown.style.zIndex = '1000';
+dropdown.style.display = 'none';  // Always hidden initially
+dropdown.innerHTML = `
+  <option value="0">colorful waves</option>
+  <option value="1">gradient animation</option>
+  <option value="2">particle explosion</option>
+  <option value="3">lissajous weeee</option>
+  <option value="4">radial pulse</option>  
+`;
+document.body.appendChild(dropdown);
+
+// Toggle visibility with '0' key press
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'h') {
+    isVisible = !isVisible;
+    dropdown.style.display = isVisible ? 'block' : 'none';  // Toggle visibility
+  }
+});
+
+dropdown.addEventListener('change', (e) => {
+  const selectedEffect = effects[e.target.value];  // Get the selected function
+  selectedEffect(ctx);  // Execute the function (this runs the animation)
+
+  // Get the function body by extracting everything between the curly braces
+  const functionBody = selectedEffect.toString().replace(/^function.*?{/, '').replace(/}$/, '');
+  
+  editor.value = functionBody;  // Display the function code (body) in the editor for editing
+});
+
+
+
+
+  </script>
+</body>
+</html>
