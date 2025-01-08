@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Live Code Editor</title>
   <script src="https://cdn.jsdelivr.net/npm/tone@next/build/Tone.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/simplex-noise@2.4.0/simplex-noise.min.js"></script>
+
   <style>
     body {
       margin: 0;
@@ -171,8 +173,26 @@ draw();
               isPlaying = false;
             }
           });
-        }
-];
+        },
+      
+        function SimplexNoiseFun(ctx){
+          const simplex = new SimplexNoise();
+          let time = 0;
+          function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let y = 0; y < canvas.height; y += 20) {
+              for (let x = 0; x < canvas.width; x += 20) {
+                const angle = simplex.noise3D(x * 0.01, y * 0.01, time) * Math.PI * 2;
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x + Math.cos(angle) * 10, y + Math.sin(angle) * 10);
+                ctx.strokeStyle = `hsl(${(x + y + time * 10) % 360}, 60%, 50%)`;
+                ctx.stroke();}}
+            time += 0.01;
+            requestAnimationFrame(draw);
+          } draw();}
+      
+  ];
 
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
@@ -224,6 +244,7 @@ dropdown.innerHTML = `
   <option value="3">lissajous weeee</option>
   <option value="4">radial pulse</option>  
   <option value="5">synthy baby</option>
+  <option value="6">simplex noise fun</option>
 `;
 document.body.appendChild(dropdown);
 
