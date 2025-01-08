@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Live Code Editor</title>
+  <script src="https://cdn.jsdelivr.net/npm/tone@next/build/Tone.min.js"></script>
   <style>
     body {
       margin: 0;
@@ -26,6 +27,13 @@
       z-index: 10; /* On top of the canvas */
       outline: none;
     }
+
+    #play {
+      position: fixed;
+      top: 50px;
+      right: 100px;
+      z-index: 1001; /* Higher than the text editor */
+    }
     canvas {
       position: absolute;
       top: 0;
@@ -42,7 +50,7 @@
   
   <!-- Textarea for typing code -->
   <textarea id="editor" placeholder="// Type your code here\n// Example: ctx.fillRect(50, 50, 100, 100);"></textarea>
-
+  <button id="play">Play Synth</button>
   <script>
 
     const effects = [
@@ -126,8 +134,45 @@ function draw() {
   time += 0.02;
   requestAnimationFrame(draw);}
 draw();
-}
-    ];
+},
+        
+        function SynthyBaby(ctx){
+          let isPlaying = false;
+          let synth, reverb;
+
+          const startSound = async () => {
+            await Tone.start();
+            reverb = new Tone.Reverb({
+              decay: 5,
+              wet: 0.5
+            }).toDestination();
+            await reverb.ready;
+
+            synth = new Tone.PolySynth(Tone.Synth, {
+              oscillator: { type: "sine" },
+              envelope: { attack: 0.1, decay: 1, sustain: 0.8, release: 1 },
+            }).toDestination();
+            synth.chain(reverb, Tone.Destination);
+            synth.triggerAttack(["C4", "E4", "G4"], Tone.now());
+          };
+
+          const isLiveServer = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost";
+          if (isLiveServer) {
+            startSound();
+            isPlaying = true;
+          }
+
+          document.getElementById("play").addEventListener("click", async () => {
+            if (!isPlaying) {
+              await startSound();
+              isPlaying = true;
+            } else {
+              synth.disconnect();
+              isPlaying = false;
+            }
+          });
+        }
+];
 
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
@@ -178,6 +223,7 @@ dropdown.innerHTML = `
   <option value="2">particle explosion</option>
   <option value="3">lissajous weeee</option>
   <option value="4">radial pulse</option>  
+  <option value="5">synthy baby</option>
 `;
 document.body.appendChild(dropdown);
 
@@ -197,6 +243,12 @@ dropdown.addEventListener('change', (e) => {
   const functionBody = selectedEffect.toString().replace(/^function.*?{/, '').replace(/}$/, '');
   
   editor.value = functionBody;  // Display the function code (body) in the editor for editing
+
+  if (e.target.value === '5') {
+  playButton.style.display = 'block'; // Show play button for SynthyBaby
+} else {
+  playButton.style.display = 'none'; // Hide play button for other effects
+}
 });
 
 

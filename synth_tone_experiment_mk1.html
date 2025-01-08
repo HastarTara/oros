@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tone.js with Reverb</title>
+  <script src="https://cdn.jsdelivr.net/npm/tone@next/build/Tone.min.js"></script>
+</head>
+<body>
+  <button id="play">Start Sound</button>
+  <script>
+    let isPlaying = false;
+    let synth, reverb;
+    const startSound = async () => {
+      await Tone.start();
+      reverb = new Tone.Reverb({
+        decay: 5,
+        wet: 0.5
+      }).toDestination();
+      await reverb.ready;
+      synth = new Tone.PolySynth(Tone.Synth, {
+        oscillator: { type: "sine" },
+        envelope: { attack: 0.1, decay: 1, sustain: 0.8, release: 1 },
+      }).toDestination();
+      synth.chain(reverb, Tone.Destination);
+      synth.triggerAttack(["C4", "E4", "G4"], Tone.now());};
+    const isLiveServer = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost";
+    if (isLiveServer) {
+      startSound();
+      isPlaying = true;}
+    document.getElementById("play").addEventListener("click", async () => {
+      if (!isPlaying) {
+        await startSound();
+        isPlaying = true;
+      } else {
+        synth.disconnect();
+        isPlaying = false;}});
+  </script>
+</body>
+</html>
