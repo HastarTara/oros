@@ -11,4 +11,5 @@
   - start thinking about making it a GAS webapp and linking it to the oros cards....  
 
 
-
+## misc (will probably need to be moved to its own repo
+  - build on the synth experiment (current there is a tone with reverb and lfo)
