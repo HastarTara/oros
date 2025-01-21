@@ -1,5 +1,5 @@
 # oros
-
+- dont use vscode live server however convenient it is - encourage more commits for better github activity/visibility
 - gather all experiments/snippets from phone and computer, put in this repo
 
 - build gyroscope / other phone sensor utilisation prototypes
