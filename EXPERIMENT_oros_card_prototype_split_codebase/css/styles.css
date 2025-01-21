@@ -1,0 +1,107 @@
+body, html {
+    margin: 0;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #242424;
+    overflow: hidden; /* Prevent scrolling */
+}
+
+.card-container {
+    width: 100vw; /* Use the full viewport width */
+    height: 100vh; /* Use the full viewport height */
+    perspective: 1000px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card {
+    width: 300px;
+    height: 600px;
+    border-radius: 30px;
+    overflow: hidden;
+    transform-style: preserve-3d;
+    position: relative;
+    animation: float 3s ease-in-out infinite;
+    transition: transform 0.6s ease, transform 0.4s ease-out; /* Combines flip and parallax transitions */
+}
+
+.front, .back {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    backface-visibility: hidden; /* Hide both sides initially */
+}
+
+.front {
+    background: url('https://preview.redd.it/ars-goetia-if-there-had-been-contemporary-oil-paintings-of-v0-zmra82j85wec1.jpg?width=1024&format=pjpg&auto=webp&s=c59b3cab376aaaa04e2a6198d042e532a42e7817') center/cover no-repeat;
+}
+
+.back {
+    background: url('https://substackcdn.com/image/fetch/w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2Fddb98739-d1ac-4601-ba5a-38415435e67b_780x1417.webp') center/cover no-repeat;
+    background-size: 110% 106%;
+    transform: rotateY(180deg); /* Back faces the opposite direction */
+    position: relative; /* For positioning QR code */
+}
+
+/* QR Code container for the back face */
+.qr-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;  /* Adjust the size of the QR code */
+    height: 200px;
+    z-index: 1;  /* Ensure the QR code appears on top of the card back */
+    pointer-events: none;  /* Prevent interfering with other interactions */
+}
+
+/* Rainbow shimmer ring for the QR code */
+.rainbow-shimmer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, red, orange, yellow, green, blue, indigo, violet);
+    background-size: 200% 200%;
+    animation: shimmering 5s linear infinite;
+    z-index: 0;
+}
+
+/* Ensure the QR code image uses screen blend mode to create the iridescent effect */
+.qr-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    mix-blend-mode: screen;  /* This replaces the black parts of the QR code with the rainbow gradient */
+}
+
+/* Keyframes to create the shimmering effect */
+@keyframes shimmering {
+    0% {
+        background-position: 200% 200%;
+    }
+    50% {
+        background-position: -200% -200%;
+    }
+    100% {
+        background-position: 200% 200%;
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+
+background: url('https://substackcdn.com/image/fetch/w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2Fddb98739-d1ac-4601-ba5a-38415435e67b_780x1417.webp') center/cover no-repeat;

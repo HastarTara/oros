@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shimmering QR Code</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #fff;
+            margin: 0;
+        }
+
+        .qr-container {
+            position: relative;
+            width: 300px;  /* Adjust the size of the QR code */
+            height: 300px;
+        }
+
+        /* Background animation for rainbow shimmer */
+        .rainbow-shimmer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+            background-size: 400% 400%;
+            animation: shimmering 10s linear infinite;
+            z-index: 1;
+            mix-blend-mode: screen;  /* Apply blend mode to the rainbow */
+        }
+
+        .qr-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            z-index: 0;
+        }
+
+        @keyframes shimmering {
+            0% {
+                background-position: 400% 0;
+            }
+            50% {
+                background-position: -400% 0;
+            }
+            100% {
+                background-position: 400% 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="qr-container">
+        <div class="rainbow-shimmer"></div>  <!-- Rainbow shimmer overlay -->
+        <!-- QR code generated as an image -->
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://your-link.com" alt="QR Code">
+    </div>
+
+</body>
+</html>

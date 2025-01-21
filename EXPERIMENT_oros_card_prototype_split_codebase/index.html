@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Flip with Float and Parallax</title>
+    <link rel="stylesheet" href="css/styles.css"> <!-- Link to external CSS -->
+</head>
+<body>
+    <div class="card-container">
+        <div class="card">
+            <div class="front"></div>
+            <div class="back">
+                <div class="qr-container">
+                    <div class="rainbow-shimmer"></div>  <!-- Rainbow shimmer overlay -->
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://your-link.com" alt="QR Code">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/script.js"></script> <!-- Link to external JS -->
+</body>
+</html>
