@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dot Grid Lock Screen</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #222;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 20px;
+            position: relative;
+            width: 260px;
+            height: 260px;
+        }
+
+        .dot {
+            width: 30px;
+            height: 30px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            background: #444;
+            cursor: pointer;
+            transition: background 0.2s;
+            position: absolute;
+        }
+
+        .dot.active {
+            background: #00bcd4;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        /* Position dots for hexagon layout */
+        .dot:nth-child(1) { top: 130px; left: 130px; } /* Center dot */
+        .dot:nth-child(2) { top: 0px; left: 130px; }  /* Top middle */
+        .dot:nth-child(3) { top: 65px; left: 220px; } /* Top right */
+        .dot:nth-child(4) { top: 195px; left: 220px; } /* Bottom right */
+        .dot:nth-child(5) { top: 260px; left: 130px; } /* Bottom middle */
+        .dot:nth-child(6) { top: 195px; left: 40px; }  /* Bottom left */
+        .dot:nth-child(7) { top: 65px; left: 40px; }  /* Top left */
+    </style>
+</head>
+<body>
+    <canvas></canvas>
+    <div class="grid">
+        <div class="dot" data-index="0"></div>
+        <div class="dot" data-index="1"></div>
+        <div class="dot" data-index="2"></div>
+        <div class="dot" data-index="3"></div>
+        <div class="dot" data-index="4"></div>
+        <div class="dot" data-index="5"></div>
+        <div class="dot" data-index="6"></div>
+    </div>
+
+    <script>
+        const canvas = document.querySelector('canvas');
+        const ctx = canvas.getContext('2d');
+        const dots = document.querySelectorAll('.dot');
+        const grid = document.querySelector('.grid');
+        const positions = [];
+        const activeDots = [];
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        function getDotCenter(dot) {
+            const rect = dot.getBoundingClientRect();
+            return {
+                x: rect.left + rect.width / 2,
+                y: rect.top + rect.height / 2
+            };
+        }
+
+        dots.forEach(dot => {
+            positions.push(getDotCenter(dot));
+        });
+
+        function drawLine() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (activeDots.length < 2) return;
+
+            ctx.strokeStyle = '#00bcd4';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+
+            for (let i = 0; i < activeDots.length; i++) {
+                const pos = positions[activeDots[i]];
+                if (i === 0) ctx.moveTo(pos.x, pos.y);
+                else ctx.lineTo(pos.x, pos.y);
+            }
+
+            ctx.stroke();
+        }
+
+        function resetGrid() {
+            activeDots.length = 0;
+            dots.forEach(dot => dot.classList.remove('active'));
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        grid.addEventListener('mousedown', e => {
+            const dot = e.target;
+            if (!dot.classList.contains('dot')) return;
+
+            resetGrid();
+            dot.classList.add('active');
+            activeDots.push(Number(dot.dataset.index));
+            drawLine();
+
+            grid.addEventListener('mousemove', handleMouseMove);
+        });
+
+        document.addEventListener('mouseup', () => {
+            grid.removeEventListener('mousemove', handleMouseMove);
+        });
+
+        function handleMouseMove(e) {
+            const dot = document.elementFromPoint(e.clientX, e.clientY);
+            if (!dot || !dot.classList.contains('dot')) return;
+
+            const index = Number(dot.dataset.index);
+            if (!activeDots.includes(index)) {
+                dot.classList.add('active');
+                activeDots.push(index);
+                drawLine();
+            }
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            positions.length = 0;
+            dots.forEach(dot => positions.push(getDotCenter(dot)));
+        });
+    </script>
+</body>
+</html>
